@@ -1,0 +1,17 @@
+.text-center {
+  text-align: center;
+}
+
+.mt-20 {
+  margin-top: 20px;
+}
+
+.m-20 {
+  margin: 20px;
+}
+
+.btn-hover:hover {
+  background-color: #3b7dc8 !important;
+  border-color: #c133c4 !important;
+  color: white !important;
+}
