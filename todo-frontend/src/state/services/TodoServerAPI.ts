@@ -21,7 +21,16 @@ export const todoServerApi = createApi({
     getTodos: builder.query({
       query: () => 'todo',
     }),
+    createTodo: builder.mutation<{}, FormData>({
+      query: (data) => {
+        return {
+          url: 'todo',
+          method: 'POST',
+          body: data,
+        };
+      },
+    }),
   }),
 });
 
-export const { useGetTodosQuery } = todoServerApi;
+export const { useGetTodosQuery, useCreateTodoMutation } = todoServerApi;

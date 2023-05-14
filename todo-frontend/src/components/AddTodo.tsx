@@ -1,15 +1,23 @@
 import { TextField } from "@mui/material";
 import AppBar from "./AppBar"
-import React, { useState, ChangeEvent } from "react";
+import React, { useState, ChangeEvent, useEffect } from "react";
 import { Button, Input } from "@mui/material";
-import axios from "axios";
+import { useCreateTodoMutation } from "../state/services/TodoServerAPI";
+import { useNavigate } from "react-router-dom";
 
 export function AddTodo() {
-
+  const navigate = useNavigate();
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [taskName, setTaskName] = useState("");
   const [taskDescription, setTaskDescription] = useState("");
+  const [createTodo, { isSuccess }]  = useCreateTodoMutation();
 
+  useEffect(() => {
+    if (isSuccess) {
+      alert("Success");
+      navigate("/view-todo");
+    }
+  }, [isSuccess]);
   const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     setSelectedFile(file || null);
@@ -21,12 +29,7 @@ export function AddTodo() {
       formData.append("image", selectedFile);
       formData.append("taskName", taskName);
       formData.append("taskDescription", taskDescription);
-      try {
-        const response = await axios.post("/api/upload", formData);
-        console.log("File uploaded successfully:", response.data);
-      } catch (error) {
-        console.error("Error uploading file:", error);
-      }
+      createTodo(formData);
     }
   };
 
