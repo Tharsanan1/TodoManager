@@ -7,19 +7,21 @@ export enum Status {
 }
 
 export interface Todo {
-  taskName : String
-  taskDescription: String
+  taskName : string
+  taskDescription: string
   status: Status
-  created_at: String
-  imageUrl: String
+  created_at: string
+  imageUrl: string
 }
 
 export const todoServerApi = createApi({
   reducerPath: 'todoServerApi',
   baseQuery: fetchBaseQuery({ baseUrl: 'http://localhost:8081/' }),
+  tagTypes: ["Todos"],
   endpoints: (builder) => ({
     getTodos: builder.query({
       query: () => 'todo',
+      providesTags: ["Todos"]
     }),
     createTodo: builder.mutation<{}, FormData>({
       query: (data) => {
@@ -30,7 +32,15 @@ export const todoServerApi = createApi({
         };
       },
     }),
+    updateTodoStatus: builder.mutation<{}, { taskName: string; status: Status }>({
+      query: ({ taskName, status }) => ({
+        url: `todo/${taskName}/status`,
+        method: 'PUT',
+        body: { status },
+      }),
+      invalidatesTags: ["Todos"]
+    }),
   }),
 });
 
-export const { useGetTodosQuery, useCreateTodoMutation } = todoServerApi;
+export const { useGetTodosQuery, useCreateTodoMutation, useUpdateTodoStatusMutation } = todoServerApi;
