@@ -68,7 +68,11 @@ export function AddTodo() {
         />
       </div>
       <div className="m-20">
-        <Input type="file" onChange={handleFileChange} />
+        <Input
+          type="file"
+          inputProps={{ accept: "image/*", }}
+          onChange={handleFileChange}
+        />
       </div>
       <div className="m-20">
         <Button variant="contained" color="success" onClick={handleUpload}>
