@@ -1,16 +1,20 @@
-import { Button, Card, CardActions, CardContent, Checkbox, Dialog, Divider, FormControlLabel, FormGroup, Grid, ToggleButton, ToggleButtonGroup, Typography } from "@mui/material";
+import { Backdrop, Button, Card, CardActions, CardContent, Checkbox, Dialog, Divider, FormControlLabel, FormGroup, Grid, ToggleButton, ToggleButtonGroup, Typography } from "@mui/material";
 import { useGetTodosQuery, useUpdateTodoStatusMutation } from "../state/services/TodoServerAPI";
 import { Todo, Status } from "../state/services/TodoServerAPI";
 import AppBarTop from "./AppBar";
 import { useEffect, useState } from "react";
 import DateRangePickerComponent from "./DateRangePicker";
 import { ImageView } from "./ImageView";
+import { useAppSelector } from "../state/hooks";
+import { useNavigate } from "react-router-dom";
 
 
-export function TodoList() {
-  const data = useGetTodosQuery(null);
+const TodoList = function () {
   const [updateTodoStatus, { isLoading, error }] = useUpdateTodoStatusMutation();
-  
+  const token = useAppSelector((state) => {
+    return state.token.token
+  })
+  const data = useGetTodosQuery(token);
   const [todos, setTodos] = useState(data.data);
   const [todoChecked, setTodoChecked] = useState(true);
   const [inProgressChecked, setinProgressChecked] = useState(true);
@@ -21,12 +25,19 @@ export function TodoList() {
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState(new Date());
   const [imageUrl, setImageUrl] = useState("");
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (data) {
       setTodos(data.data);
     }
   }, [data]);
+
+  useEffect(() => {
+    if (data) {
+      data.refetch();
+    }
+  }, []);
 
   const handleTodoCheckBoxChange = (isChecked: boolean) => {
     setTodoChecked(isChecked);
@@ -53,20 +64,18 @@ export function TodoList() {
   }
 
   const handleStatusChange = (
-    taskName: string,
+    id: string,
     status: Status
   ) => {
-    updateTodoStatus({taskName, status})
+    updateTodoStatus({id, status})
   };
 
   useEffect(() => {
     if (data.data) {
-      // console.log(todoChecked, inProgressChecked, doneChecked);
-
       let todoAfterDateFilter;
       if (dateRangeChecked) {
         todoAfterDateFilter = data.data.filter((todo: Todo) => {
-          const createdTimeStamp = Date.parse(todo.created_at);
+          const createdTimeStamp = Date.parse(todo.createdAt);
           const createdDateTodo = new Date(createdTimeStamp);
           const createdWithoutTime = new Date(
             createdDateTodo.getFullYear(),
@@ -83,13 +92,6 @@ export function TodoList() {
             endDate.getMonth(),
             endDate.getDate()
           );
-          console.log(
-            startDate,
-            createdDateTodo,
-            endDate,
-            startDate <= createdDateTodo,
-            createdDateTodo <= endDate
-          );
           if (
             startDateWithoutTime <= createdWithoutTime &&
             createdWithoutTime <= endDateWithoutTime
@@ -103,35 +105,16 @@ export function TodoList() {
       }
       const todosToShow = todoAfterDateFilter.filter((todo: Todo) => {
         if (todoChecked) {
-          console.log(
-            "ddfdsf",
-            todo.status,
-            Status.Todo,
-            todo.status === Status.Todo
-          );
           if (todo.status === Status.Todo) {
-            console.log(todo.status);
             return true;
           }
         }
         if (inProgressChecked) {
-          console.log(
-            "ddfdsf",
-            todo.status,
-            Status.InProgress,
-            todo.status === Status.InProgress
-          );
           if (todo.status === Status.InProgress) {
             return true;
           }
         }
         if (doneChecked) {
-          console.log(
-            "ddfdsf",
-            todo.status,
-            Status.Done,
-            todo.status === Status.Done
-          );
           if (todo.status === Status.Done) {
             return true;
           }
@@ -241,6 +224,18 @@ export function TodoList() {
               </Button>
             </FormGroup>
           </Grid>
+          <br></br>
+          <Grid item xs={12} sm={12} lg={12}>
+            <FormGroup>
+              <Button
+                variant="contained"
+                color="success"
+                onClick={() => navigate("/add-todo")}
+              >
+                Add New Todo
+              </Button>
+            </FormGroup>
+          </Grid>
         </Grid>
       </div>
       {data.isSuccess && todos ? (
@@ -254,29 +249,30 @@ export function TodoList() {
                     color="text.primary"
                     gutterBottom
                   >
-                    {item.taskName}
+                    {item.name}
                   </Typography>
                   <Typography
                     sx={{ fontSize: 14 }}
                     color="text.primary"
                     gutterBottom
                   >
-                    {item.taskDescription}
+                    {item.description}
                   </Typography>
                   <Typography
                     sx={{ fontSize: 14 }}
                     color="text.primary"
                     gutterBottom
                   >
-                    Created at: {item.created_at}
+                    {item.createdAt}
                   </Typography>
                   <div className="mt-10">
                     <ToggleButtonGroup
                       color="primary"
+                      size="small"
                       value={item.status}
                       exclusive
                       onChange={(event, value) => {
-                        handleStatusChange(item.taskName, value)
+                        handleStatusChange(item._id, value);
                       }}
                       aria-label="Platform"
                     >
@@ -312,3 +308,5 @@ export function TodoList() {
     </div>
   );
 }
+
+export default TodoList;

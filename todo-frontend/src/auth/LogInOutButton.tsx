@@ -3,7 +3,7 @@ import { useAuth0 } from '@auth0/auth0-react'
 import Button from "@mui/material/Button";
 
 function LogInOutButton() {
-  const { isAuthenticated, logout, loginWithRedirect } = useAuth0();
+  const { isAuthenticated, logout, loginWithRedirect, getAccessTokenSilently } = useAuth0();
 
   const handleLogout: MouseEventHandler<HTMLButtonElement> = (event) => {
     event.preventDefault()
@@ -17,6 +17,7 @@ function LogInOutButton() {
   const handleLogin: MouseEventHandler<HTMLButtonElement> = (event) => {
     event.preventDefault();
     loginWithRedirect();
+    
   };
 
   return isAuthenticated ? (

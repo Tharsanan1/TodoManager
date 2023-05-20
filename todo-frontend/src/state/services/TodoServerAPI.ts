@@ -1,4 +1,5 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import { RootState } from '../store';
 
 export enum Status {
   Todo = "Todo",
@@ -7,21 +8,34 @@ export enum Status {
 }
 
 export interface Todo {
-  taskName : string
-  taskDescription: string
+  _id: string
+  name : string
+  description: string
   status: Status
-  created_at: string
+  createdAt: string
   imageUrl: string
 }
 
 export const todoServerApi = createApi({
   reducerPath: 'todoServerApi',
-  baseQuery: fetchBaseQuery({ baseUrl: 'http://localhost:8081/' }),
+  baseQuery: fetchBaseQuery({ 
+    baseUrl: 'http://localhost:8081/',
+    prepareHeaders: (headers, { getState }) => {
+      const token = (getState() as RootState).token.token
+      console.log("token:" + token )
+      if (token) {
+        headers.set('authorization', `Bearer ${token}`)
+      }
+
+      return headers
+    },
+  }),
+  
   tagTypes: ["Todos"],
   endpoints: (builder) => ({
     getTodos: builder.query({
       query: () => 'todo',
-      providesTags: ["Todos"]
+      providesTags: ["Todos"],
     }),
     createTodo: builder.mutation<{}, FormData>({
       query: (data) => {
@@ -29,13 +43,14 @@ export const todoServerApi = createApi({
           url: 'todo',
           method: 'POST',
           body: data,
+          
         };
       },
     }),
-    updateTodoStatus: builder.mutation<{}, { taskName: string; status: Status }>({
-      query: ({ taskName, status }) => ({
-        url: `todo/${taskName}/status`,
-        method: 'PUT',
+    updateTodoStatus: builder.mutation<{}, { id: string; status: Status }>({
+      query: ({ id, status }) => ({
+        url: `todo/${id}/status`,
+        method: 'PATCH',
         body: { status },
       }),
       invalidatesTags: ["Todos"]

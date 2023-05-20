@@ -14,8 +14,9 @@ const Auth0ProviderWithHistory: React.FC<Auth0ProviderWithHistoryProps> = ({chil
   const domain = process.env.REACT_APP_AUTH_DOMAIN || "";
   const clientId = process.env.REACT_APP_AUTH_CLIENT_ID || "";
   const authorizationParams = {
-    redirect_uri: window.location.origin
-  }
+    redirect_uri: window.location.origin,
+    audience: `https://${domain}/api/v2/`,
+  };
   const navigate = useNavigate()
   const onRedirectCallback = (appState?: AppState) => {
     navigate(appState?.returnTo || window.location.pathname)
