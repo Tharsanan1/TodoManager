@@ -5,6 +5,13 @@ dotenv.config();
 import { imageRouter, todoRouter } from './controllers/routes'
 import cors from 'cors';
 import jwt, {JwtPayload} from 'jsonwebtoken';
+import path from 'path';
+
+
+
+const app = express();
+app.use(cors());
+
 
 const { auth } = require('express-oauth2-jwt-bearer');
 const checkJwt = auth({
@@ -12,12 +19,9 @@ const checkJwt = auth({
   issuerBaseURL: `https://${process.env.AUTH0_DOMAIN}/`,
 });
 
-const app = express();
-app.use(cors());
-
 const config = {
   dbUrl: process.env.DB_URL || "",
-  port: process.env.PORT || 8081 
+  port: process.env.PORT || 8080
 }
 
 // Connect to the database
@@ -54,9 +58,14 @@ app.use((req, res, next) => {
 });
 
 
+app.use(express.static(path.resolve(__dirname, '../todo-frontend/build')));
+
 app.use('/todo', checkJwt, todoRouter);
 app.use('/image', checkJwt, imageRouter);
 
+app.get('*', (req, res) => {
+  res.sendFile(path.resolve(__dirname, '../todo-frontend/build', 'index.html'));
+});
 // Start the server
 const port = config.port || 3000;
 app.listen(port, () => {

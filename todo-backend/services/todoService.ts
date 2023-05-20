@@ -15,7 +15,7 @@ const todoService = {
       let imageUrl = null;
       if (imageBuffer != null) {
         const image = await createImage(imageBuffer, contentType, email);
-        imageUrl = process.env.BASE_URL + `/image/${image._id}`;
+        imageUrl = `/image/${image._id}`;
       } 
       const createdAt = new Date();
       const newTodo = {

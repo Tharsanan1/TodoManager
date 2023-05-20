@@ -19,7 +19,7 @@ export interface Todo {
 export const todoServerApi = createApi({
   reducerPath: 'todoServerApi',
   baseQuery: fetchBaseQuery({ 
-    baseUrl: 'http://localhost:8081/',
+    baseUrl: '/',
     prepareHeaders: (headers, { getState }) => {
       const token = (getState() as RootState).token.token
       console.log("token:" + token )
