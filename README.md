@@ -31,7 +31,7 @@ EMAIL_IDENTIFIER=// Auth0 accessToken email identifier
 
 1) Docker compose way: In the root diretory `docker-compose up`
 2) Docker way: `docker build -t todo-manager . && docker run -p 8080:8080 -p 9443:9443 --env-file ./todo-backend/.env todo-manager`
-3) Want to use a public image already published? `docker run -p 8080:8080 -p 8443:8443 --env-file ./todo-backend/.env tharsanan/todo-manager:1.0.2`
+3) Want to use a public image already published? `docker run -p 8080:8080 -p 8443:8443 --env-file ./todo-backend/.env tharsanan/todo-manager`
 
 
 
