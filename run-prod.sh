@@ -1,7 +1,2 @@
-cd todo-backend
-npm install
-cd ../todo-frontend
-npm install
-cd -
-npm run build
+sh build-prod.sh
 npm run start-prod
