@@ -10,7 +10,7 @@ import { useNavigate } from "react-router-dom";
 
 
 const TodoList = function () {
-  const [updateTodoStatus, { isLoading, error }] = useUpdateTodoStatusMutation();
+  const [updateTodoStatus, { isLoading, error, isSuccess }] = useUpdateTodoStatusMutation();
   const token = useAppSelector((state) => {
     return state.token.token
   })
@@ -134,6 +134,10 @@ const TodoList = function () {
 
   return (
     <div>
+      <Backdrop
+        sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        open={isLoading}
+      ></Backdrop>
       <Dialog
         open={isDatePickerDialogOpen}
         onClose={() => {
