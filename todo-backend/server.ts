@@ -6,8 +6,16 @@ import { imageRouter, todoRouter } from './controllers/routes'
 import cors from 'cors';
 import jwt, {JwtPayload} from 'jsonwebtoken';
 import path from 'path';
+import http from 'http';
+import https from 'https';
+import fs from 'fs';
 
-
+var key = fs.readFileSync(__dirname + '/../certs/selfsigned.key');
+var cert = fs.readFileSync(__dirname + '/../certs/selfsigned.crt');
+var credentials = {
+  key: key,
+  cert: cert
+};
 
 const app = express();
 app.use(cors());
@@ -21,7 +29,8 @@ const checkJwt = auth({
 
 const config = {
   dbUrl: process.env.DB_URL || "",
-  port: process.env.PORT || 8080
+  httpPort: process.env.HTTP_PORT || 8080,
+  httpsPort: process.env.HTTPS_PORT || 8443
 }
 
 // Connect to the database
@@ -66,8 +75,12 @@ app.use('/image', checkJwt, imageRouter);
 app.get('*', (req, res) => {
   res.sendFile(path.resolve(__dirname, '../build-ui', 'index.html'));
 });
-// Start the server
-const port = config.port || 3000;
-app.listen(port, () => {
-  console.log(`Server listening on port ${port}`);
+
+var httpServer = http.createServer(app);
+var httpsServer = https.createServer(credentials, app);
+httpServer.listen(config.httpPort, () => {
+  console.log(`Http server listening on port ${config.httpPort}`);
+});
+httpsServer.listen(config.httpsPort, () => {
+  console.log(`Https server listening on port ${config.httpsPort}`);
 });

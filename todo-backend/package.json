@@ -17,7 +17,7 @@
     "start": "ts-node-dev server.ts",
     "start-prod": "node ./build/server.js",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "rimraf ../todo-frontend/build && cd ../todo-frontend && npm run build && cd ../todo-backend && cp -r ../todo-frontend/build build-ui && rimraf ./build && tsc"
+    "build": "rimraf ./build && rimraf ./build-ui && rimraf ../todo-frontend/build && cd ../todo-frontend && npm run build && cd ../todo-backend && cp -r ../todo-frontend/build/ build-ui/ && tsc"
   },
   "keywords": [],
   "author": "",
