@@ -58,13 +58,13 @@ app.use((req, res, next) => {
 });
 
 
-app.use(express.static(path.resolve(__dirname, '../todo-frontend/build')));
+app.use(express.static(path.resolve(__dirname, '../build-ui')));
 
 app.use('/todo', checkJwt, todoRouter);
 app.use('/image', checkJwt, imageRouter);
 
 app.get('*', (req, res) => {
-  res.sendFile(path.resolve(__dirname, '../todo-frontend/build', 'index.html'));
+  res.sendFile(path.resolve(__dirname, '../build-ui', 'index.html'));
 });
 // Start the server
 const port = config.port || 3000;
